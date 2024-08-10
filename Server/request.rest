@@ -1,0 +1,38 @@
+// Create a User
+POST http://localhost:5000/users
+Content-Type: application/json
+
+{
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "password": "password123",
+    "confPassword": "password123",
+    "role": "admin"
+}
+
+###
+// Logout User
+DELETE http://localhost:5000/logout
+
+###
+// Login User
+POST http://localhost:5000/login
+Content-Type: application/json
+
+{
+    "email": "john.doe@example.com",
+    "password": "password123"
+}
+
+###
+// Create a Topic
+
+POST http://localhost:5000/topics
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+    "name": "Sample Topic",
+    "description": "This is a sample topic."
+}
+

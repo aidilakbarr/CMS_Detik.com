@@ -1,6 +1,7 @@
 import express from "express";
 import {
   getTopics,
+  getTopicByFilter,
   getTopicById,
   createTopic,
   updateTopic,
@@ -10,6 +11,7 @@ import { verifyUser } from "../middlewares/AuthUser.js";
 
 const router = express.Router();
 
+router.get("/topics/filter", verifyUser, getTopicByFilter);
 router.get("/topics", verifyUser, getTopics);
 router.get("/topics/:id", verifyUser, getTopicById);
 router.post("/topics", verifyUser, createTopic);

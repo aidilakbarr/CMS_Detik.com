@@ -33,6 +33,27 @@ Content-Type: application/json
 
 {
     "name": "Sample Topic",
-    "description": "This is a sample topic."
+    "description": "This is a sample topic 2",
+    "divisionName": "MARKETING"
 }
 
+###
+// Find All Topics
+
+GET http://localhost:5000/topics
+Authorization: Bearer <access_token>
+
+###
+// Find Topic by ID
+
+GET http://localhost:5000/topics/5de6060c-1ff4-48c9-9e98-b9be02f9c5f2
+Authorization: Bearer <access_token>
+
+###
+// Find Topics By Filter
+
+GET http://localhost:5000/topics/filter?division=2
+Authorization: Bearer <access_token>
+
+###
+// Update Topic

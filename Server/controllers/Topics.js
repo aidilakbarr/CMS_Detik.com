@@ -1,5 +1,6 @@
 import Topic from "../models/TopicModel.js";
 import User from "../models/UserModel.js";
+import Division from "../models/DivisionModel.js";
 import { Op } from "sequelize";
 
 export const getTopics = async (req, res) => {
@@ -35,6 +36,23 @@ export const getTopics = async (req, res) => {
   }
 };
 
+export const getTopicByFilter = async (req, res) => {
+  const divisionName = req.query.division;
+
+  let query = {};
+  if (divisionName) {
+    const division = await Division.findOne({ where: { name: divisionName } });
+    if (division) {
+      query.divisionId = division.id;
+    }
+  }
+  const topics = await Topic.findAll({
+    where: query,
+    include: [{ model: Division, as: "division" }],
+  });
+  res.json(topics);
+};
+
 export const getTopicById = async (req, res) => {
   try {
     const topic = await Topic.findOne({
@@ -42,13 +60,6 @@ export const getTopicById = async (req, res) => {
         uuid: req.params.id,
       },
     });
-    console.log("1 = ", req.params.id);
-    console.log(
-      "2 = ",
-      await Topic.findAll({
-        attributes: ["uuid"],
-      })
-    );
     if (!topic) return res.status(404).json({ msg: "Data tidak ditemukan" });
     let response;
     if (req.role === "admin") {
@@ -85,11 +96,15 @@ export const getTopicById = async (req, res) => {
 };
 
 export const createTopic = async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, divisionName } = req.body;
+
+  const division = await Division.findOne({ where: { name: divisionName } });
+  if (!division) return res.status(400).json({ message: "Invalid Division" });
   try {
     await Topic.create({
       name: name,
       description: description,
+      divisionId: division.id,
       userId: req.userId,
     });
     res.status(201).json({ msg: "Topic Created Successfuly" });
@@ -106,10 +121,13 @@ export const updateTopic = async (req, res) => {
       },
     });
     if (!Topic) return res.status(404).json({ msg: "Data tidak ditemukan" });
-    const { name, description } = req.body;
+    const { name, description, divisionName } = req.body;
+    const division = await Division.findOne({ where: { name: divisionName } });
+    if (!division) return res.status(400).json({ message: "Invalid Division" });
+
     if (req.role === "admin") {
       await Topic.update(
-        { name, description },
+        { name, description, divisionId: division.id },
         {
           where: {
             id: Topic.id,
